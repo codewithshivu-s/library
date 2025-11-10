@@ -1,0 +1,492 @@
+﻿  <!DOCTYPE html>
+  <html lang="en">
+    <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📚 Library Management System</title>
+    <link rel="stylesheet" href="styles.css">
+    </head>
+    <body>
+    <!-- Login Page -->
+    <div id="loginPage" class="login-container">
+        <div class="login-card">
+            <h1>📚 Library Management System</h1>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" class="input" placeholder="Enter your username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" class="input" placeholder="Enter your password" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Login</button>
+            </form>
+            <div id="loginError" class="alert alert-error hidden"></div>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="app" class="hidden">
+        <div class="container">
+            <div class="header">
+                <div>
+                    <h2 id="dashboardTitle">Dashboard</h2>
+                    <p style="color: rgba(255, 255, 255, 0.8); font-size: 0.875rem;">Welcome, <span id="userName"></span></p>
+                </div>
+                <button class="btn btn-secondary" onclick="App.logout()" style="background: rgba(255, 255, 255, 0.2); border: 1px solid rgba(255, 255, 255, 0.3);">Logout</button>
+            </div>
+
+            <!-- Admin Dashboard -->
+            <div id="adminDashboard" class="dashboard hidden">
+                <div class="tabs">
+                    <button class="tab active" onclick="AdminDashboard.switchTab('overview')">📊 Overview</button>
+                    <button class="tab" onclick="AdminDashboard.switchTab('books')">📚 Books</button>
+                    <button class="tab" onclick="AdminDashboard.switchTab('users')">👥 Users</button>
+                    <button class="tab" onclick="AdminDashboard.switchTab('issue-return')">📖 Issue/Return</button>
+                    <button class="tab" onclick="AdminDashboard.switchTab('catalog')">🔍 Catalog</button>
+                    <button class="tab" onclick="AdminDashboard.switchTab('bookmarks')">🔖 Bookmarks</button>
+                    <button class="tab" onclick="AdminDashboard.switchTab('transactions')">📋 Transactions</button>
+                </div>
+
+                <!-- Overview Tab -->
+                <div id="tab-overview" class="tab-content">
+                    <div class="grid grid-4">
+                        <div class="card stats-card blue">
+                            <h3 id="totalBooks">0</h3>
+                            <p>Total Books</p>
+                        </div>
+                        <div class="card stats-card green">
+                            <h3 id="totalUsers">0</h3>
+                            <p>Total Users</p>
+                        </div>
+                        <div class="card stats-card orange">
+                            <h3 id="activeIssues">0</h3>
+                            <p>Active Issues</p>
+                        </div>
+                        <div class="card stats-card purple">
+                            <h3 id="availableBooks">0</h3>
+                            <p>Available Books</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Books Tab -->
+                <div id="tab-books" class="tab-content hidden">
+                    <div class="card">
+                        <h2>📚 Add New Book</h2>
+                        <form id="addBookForm">
+                            <div class="grid grid-2">
+                                <div class="form-group">
+                                    <label for="bookTitle">Title</label>
+                                    <input type="text" id="bookTitle" class="input" placeholder="Enter book title" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="bookAuthor">Author</label>
+                                    <input type="text" id="bookAuthor" class="input" placeholder="Enter author name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="bookISBN">ISBN</label>
+                                    <input type="text" id="bookISBN" class="input" placeholder="Enter ISBN number" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="bookCategory">Category</label>
+                                    <input type="text" id="bookCategory" class="input" placeholder="Enter category" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="bookCopies">Total Copies</label>
+                                    <input type="number" id="bookCopies" class="input" placeholder="Enter number of copies" min="1" required>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Add Book</button>
+                        </form>
+                    </div>
+                    <div class="card">
+                        <h2>📁 Import/Export Books</h2>
+                        <div class="form-group">
+                            <label for="csvFile">Upload CSV File</label>
+                            <input type="file" id="csvFile" class="input" accept=".csv" />
+                            <small style="color: var(--gray-color); font-size: 0.75rem;">CSV format: ISBN,Title,Author,Category</small>
+                        </div>
+                        <button id="importCsvBtn" class="btn btn-secondary">Import Books from CSV</button>
+                        <button id="downloadCsvBtn" class="btn btn-primary" style="margin-left: 10px;">Download All Books as CSV</button>
+                        <div id="adminCsvError" class="alert alert-error hidden" style="margin-top: 15px;"></div>
+                    </div>
+                    <div class="card">
+                        <h2>📚 All Books</h2>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Author</th>
+                                    <th>ISBN</th>
+                                    <th>Category</th>
+                                    <th>Available</th>
+                                    <th>Total</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="booksTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Users Tab -->
+                <div id="tab-users" class="tab-content hidden">
+                    <div class="card">
+                        <h2>👥 Add New User</h2>
+                        <form id="addUserForm">
+                            <div class="grid grid-2">
+                                <div class="form-group">
+                                    <label for="userFullName">Full Name</label>
+                                    <input type="text" id="userFullName" class="input" placeholder="Enter full name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="userUsername">Username</label>
+                                    <input type="text" id="userUsername" class="input" placeholder="Enter username" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="userPassword">Password</label>
+                                    <input type="password" id="userPassword" class="input" placeholder="Enter password" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="userRole">Role</label>
+                                    <select id="userRole" class="select" required>
+                                        <option value="">Select Role</option>
+                                        <option value="admin">Admin</option>
+                                        <option value="librarian">Librarian</option>
+                                        <option value="teacher">Teacher</option>
+                                        <option value="student">Student</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="userAdminNumber">Admin Number</label>
+                                    <input type="text" id="userAdminNumber" class="input" placeholder="Leave empty for auto-generate">
+                                </div>
+                                <div id="classFieldContainer" class="form-group hidden">
+                                    <label for="userClass">Class</label>
+                                    <input type="text" id="userClass" class="input" placeholder="e.g., Grade 10-A">
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Add User</button>
+                        </form>
+                    </div>
+                    <div class="card">
+                        <h2>📁 Import/Export Users</h2>
+                        <div class="form-group">
+                            <label for="csvUserFile">Upload CSV File</label>
+                            <input type="file" id="csvUserFile" class="input" accept=".csv" />
+                            <small style="color: var(--gray-color); font-size: 0.75rem;">CSV format: FullName,Username,Password,Role,AdminNumber,Class</small>
+                        </div>
+                        <button id="importUsersCsvBtn" class="btn btn-secondary">Import Users from CSV</button>
+                        <button id="downloadUsersCsvBtn" class="btn btn-primary" style="margin-left: 10px;">Download All Users as CSV</button>
+                        <div id="adminCsvError" class="alert alert-error hidden" style="margin-top: 15px;"></div>
+                    </div>
+                    <div class="card">
+                        <h2>👥 All Users</h2>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Full Name</th>
+                                    <th>Username</th>
+                                    <th>Password</th>
+                                    <th>Role</th>
+                                    <th>Admin Number</th>
+                                    <th>Class</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usersTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Issue/Return Tab (Admin) -->
+                <div id="tab-issue-return" class="tab-content hidden">
+                    <div class="grid grid-2">
+                        <div class="card">
+                            <h2>📖 Issue Book</h2>
+                            <form id="adminIssueBookForm">
+                                <div class="form-group">
+                                    <label for="adminSearchBookISBN">Book ISBN</label>
+                                    <input type="text" id="adminSearchBookISBN" class="input" placeholder="Enter ISBN to search">
+                                </div>
+                                <div id="adminBookInfo" class="hidden"></div>
+                                <div class="form-group">
+                                    <label for="adminSearchUserAdmin">Student/Teacher Admin Number</label>
+                                    <input type="text" id="adminSearchUserAdmin" class="input" placeholder="Enter admin number">
+                                </div>
+                                <div id="adminUserInfo" class="hidden"></div>
+                                <div class="form-group">
+                                    <label for="adminIssueDate">Issue Date</label>
+                                    <input type="date" id="adminIssueDate" class="input" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="adminReturnDays">Return Days (Days until due date)</label>
+                                    <input type="number" id="adminReturnDays" class="input" placeholder="Enter number of days" min="1" value="7" required>
+                                    <small style="color: var(--gray-color); font-size: 0.75rem;">Number of days the user has to return the book</small>
+                                </div>
+                                <button type="submit" class="btn btn-primary" style="width: 100%;">Issue Book</button>
+                            </form>
+                            <div id="adminIssueError" class="alert alert-error hidden"></div>
+                        </div>
+                        <div class="card">
+                            <h2>📖 Return Book</h2>
+                            <form id="adminReturnBookForm">
+                                <div class="form-group">
+                                    <label for="adminReturnBookISBN">Book ISBN</label>
+                                    <input type="text" id="adminReturnBookISBN" class="input" placeholder="Enter ISBN to return">
+                                </div>
+                                <div id="adminReturnInfo" class="hidden"></div>
+                                <button type="submit" class="btn btn-success" style="width: 100%;">Return Book</button>
+                            </form>
+                            <div id="adminReturnError" class="alert alert-error hidden"></div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h2>📖 Currently Issued Books</h2>
+                        <div id="adminActiveIssuesList" class="grid grid-3"></div>
+                    </div>
+                </div>
+
+                <!-- Catalog Tab (Admin) -->
+                <div id="tab-catalog" class="tab-content hidden">
+                    <div class="card">
+                        <h2>🔍 Book Catalog</h2>
+                        <div class="search-box">
+                            <input type="text" id="adminCatalogSearch" class="input" placeholder="Search by title, author, or ISBN...">
+                        </div>
+                        <div class="form-group">
+                            <label for="adminCatalogCategory">Category</label>
+                            <select id="adminCatalogCategory" class="select">
+                                <option value="all">All Categories</option>
+                            </select>
+                        </div>
+                        <div id="adminCatalogList" class="grid grid-3"></div>
+                    </div>
+                </div>
+
+                <!-- Bookmarks Tab (Admin) -->
+                <div id="tab-bookmarks" class="tab-content hidden">
+                    <div class="card">
+                        <h2>🔖 Bookmarks</h2>
+                        <p>View all bookmarked books and who bookmarked them.</p>
+                        <div id="adminBookmarksList" class="grid grid-3"></div>
+                    </div>
+                </div>
+
+                <!-- Transactions Tab -->
+                <div id="tab-transactions" class="tab-content hidden">
+                    <div class="card">
+                        <h2>📋 Transaction History</h2>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Book</th>
+                                    <th>User</th>
+                                    <th>Type</th>
+                                    <th>Issue Date</th>
+                                    <th>Due Date</th>
+                                    <th>Return Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="transactionsTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Librarian Dashboard -->
+            <div id="librarianDashboard" class="dashboard hidden">
+                <div class="tabs">
+                    <button class="tab active" onclick="LibrarianDashboard.switchTab('issue-return')">📖 Issue/Return</button>
+                    <button class="tab" onclick="LibrarianDashboard.switchTab('catalog')">📚 Catalog</button>
+                    <button class="tab" onclick="LibrarianDashboard.switchTab('bookmarks')">🔖 Bookmarks</button>
+                    <button class="tab" onclick="LibrarianDashboard.switchTab('transactions')">📋 History</button>
+                </div>
+
+                <!-- Issue/Return Tab -->
+                <div id="librarian-tab-issue-return" class="tab-content">
+                    <div class="grid grid-2">
+                        <div class="card">
+                            <h2>📖 Issue Book</h2>
+                            <form id="issueBookForm">
+                                <div class="form-group">
+                                    <label for="searchBookISBN">Book ISBN</label>
+                                    <input type="text" id="searchBookISBN" class="input" placeholder="Enter ISBN to search">
+                                </div>
+                                <div id="bookInfo" class="hidden"></div>
+                                <div class="form-group">
+                                    <label for="searchUserAdmin">Student/Teacher Admin Number</label>
+                                    <input type="text" id="searchUserAdmin" class="input" placeholder="Enter admin number">
+                                </div>
+                                <div id="userInfo" class="hidden"></div>
+                                <div class="form-group">
+                                    <label for="issueDate">Issue Date</label>
+                                    <input type="date" id="issueDate" class="input" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="returnDays">Return Days (Days until due date)</label>
+                                    <input type="number" id="returnDays" class="input" placeholder="Enter number of days" min="1" value="7" required>
+                                    <small style="color: var(--gray-color); font-size: 0.75rem;">Number of days the user has to return the book</small>
+                                </div>
+                                <button type="submit" class="btn btn-primary" style="width: 100%;">Issue Book</button>
+                            </form>
+                            <div id="issueError" class="alert alert-error hidden"></div>
+                        </div>
+                        <div class="card">
+                            <h2>📖 Return Book</h2>
+                            <form id="returnBookForm">
+                                <div class="form-group">
+                                    <label for="returnBookISBN">Book ISBN</label>
+                                    <input type="text" id="returnBookISBN" class="input" placeholder="Enter ISBN to return">
+                                </div>
+                                <div id="returnInfo" class="hidden"></div>
+                                <button type="submit" class="btn btn-success" style="width: 100%;">Return Book</button>
+                            </form>
+                            <div id="returnError" class="alert alert-error hidden"></div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h2>📖 Currently Issued Books</h2>
+                        <div id="activeIssuesList" class="grid grid-3"></div>
+                    </div>
+                </div>
+
+                <!-- Catalog Tab -->
+                <div id="librarian-tab-catalog" class="tab-content hidden">
+                    <div class="card">
+                        <h2>📚 Book Catalog</h2>
+                        <div id="catalogList" class="grid grid-3"></div>
+                    </div>
+                </div>
+
+                <!-- Bookmarks Tab (Librarian) -->
+                <div id="librarian-tab-bookmarks" class="tab-content hidden">
+                    <div class="card">
+                        <h2>🔖 Bookmarks</h2>
+                        <p>View all bookmarked books and who bookmarked them.</p>
+                        <div id="librarianBookmarksList" class="grid grid-3"></div>
+                    </div>
+                </div>
+
+                <!-- Transactions Tab -->
+                <div id="librarian-tab-transactions" class="tab-content hidden">
+                    <div class="card">
+                        <h2>📋 Transaction History</h2>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Book</th>
+                                    <th>User</th>
+                                    <th>Type</th>
+                                    <th>Issue Date</th>
+                                    <th>Due Date</th>
+                                    <th>Return Date</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="librarianTransactionsTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Teacher Dashboard -->
+            <div id="teacherDashboard" class="dashboard hidden">
+                <div class="tabs">
+                    <button class="tab active" onclick="TeacherDashboard.switchTab('catalog')">📚 Catalog</button>
+                    <button class="tab" onclick="TeacherDashboard.switchTab('reserved')">📌 Reserved</button>
+                    <button class="tab" onclick="TeacherDashboard.switchTab('issued')">📖 My Books</button>
+                </div>
+
+                <!-- Catalog Tab -->
+                <div id="teacher-tab-catalog" class="tab-content">
+                    <div class="card">
+                        <h2>📚 Book Catalog</h2>
+                        <div class="search-box">
+                            <input type="text" id="catalogSearch" class="input" placeholder="Search by title, author, or ISBN...">
+                        </div>
+                        <div class="form-group">
+                            <label for="catalogCategory">Category</label>
+                            <select id="catalogCategory" class="select">
+                                <option value="all">All Categories</option>
+                            </select>
+                        </div>
+                        <div id="teacherCatalogList" class="grid grid-3"></div>
+                    </div>
+                </div>
+
+                <!-- Reserved Tab -->
+                <div id="teacher-tab-reserved" class="tab-content hidden">
+                    <div class="card">
+                        <h2>📌 Reserved Books</h2>
+                        <div id="reservedBooksList" class="grid grid-3"></div>
+                    </div>
+                </div>
+
+                <!-- Issued Books Tab -->
+                <div id="teacher-tab-issued" class="tab-content hidden">
+                    <div class="card">
+                        <h2>📖 Currently Issued Books</h2>
+                        <div id="issuedBooksList" class="grid grid-3"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Student Dashboard -->
+            <div id="studentDashboard" class="dashboard hidden">
+                <div class="tabs">
+                    <button class="tab active" onclick="StudentDashboard.switchTab('search')">🔍 Search Books</button>
+                    <button class="tab" onclick="StudentDashboard.switchTab('requested')">📌 Requested</button>
+                    <button class="tab" onclick="StudentDashboard.switchTab('borrowed')">📖 My Books</button>
+                </div>
+
+                <!-- Search Tab -->
+                <div id="student-tab-search" class="tab-content">
+                    <div class="card">
+                        <h2>🔍 Search Books</h2>
+                        <div class="search-box">
+                            <input type="text" id="studentCatalogSearch" class="input" placeholder="Search by title, author, or ISBN...">
+                        </div>
+                        <div class="form-group">
+                            <label for="studentCatalogCategory">Category</label>
+                            <select id="studentCatalogCategory" class="select">
+                                <option value="all">All Categories</option>
+                            </select>
+                        </div>
+                        <div id="studentCatalogList" class="grid grid-3"></div>
+                    </div>
+                </div>
+
+                <!-- Requested Tab -->
+                <div id="student-tab-requested" class="tab-content hidden">
+                    <div class="card">
+                        <h2>📌 Requested Books</h2>
+                        <div id="requestedBooksList" class="grid grid-3"></div>
+                    </div>
+                </div>
+
+                <!-- Borrowed Tab -->
+                <div id="student-tab-borrowed" class="tab-content hidden">
+                    <div class="card">
+                        <h2>📖 My Borrowed Books</h2>
+                        <div id="borrowedBooksList" class="grid grid-3"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="data.js"></script>
+    <script src="utils.js"></script>
+    <script src="admin-dashboard.js"></script>
+    <script src="librarian-dashboard.js"></script>
+    <script src="teacher-dashboard.js"></script>
+    <script src="student-dashboard.js"></script>
+    <script src="app.js"></script>
+    </body>
+  </html>

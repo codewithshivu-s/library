@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>LocalStorage Data Viewer</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .data-section { margin-bottom: 30px; }
+        .data-section h2 { color: #333; border-bottom: 2px solid #007bff; padding-bottom: 10px; }
+        pre { background-color: #f8f9fa; border: 1px solid #dee2e6; padding: 15px; border-radius: 5px; overflow-x: auto; }
+        .empty { color: #6c757d; font-style: italic; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Library Management System - Data Viewer</h1>
+        
+        <div class="data-section">
+            <h2>Books Data</h2>
+            <pre id="booksData">Loading...</pre>
+        </div>
+        
+        <div class="data-section">
+            <h2>Users Data</h2>
+            <pre id="usersData">Loading...</pre>
+        </div>
+        
+        <div class="data-section">
+            <h2>Transactions Data</h2>
+            <pre id="transactionsData">Loading...</pre>
+        </div>
+        
+        <div class="data-section">
+            <h2>Bookmarks Data</h2>
+            <pre id="bookmarksData">Loading...</pre>
+        </div>
+    </div>
+
+    <script>
+        // Function to format JSON data for display
+        function formatJson(data) {
+            if (!data || data.length === 0) {
+                return "No data found";
+            }
+            return JSON.stringify(data, null, 2);
+        }
+        
+        // Function to load and display data
+        function loadData() {
+            try {
+                // Load books data
+                const books = JSON.parse(localStorage.getItem('books')) || [];
+                document.getElementById('booksData').textContent = formatJson(books);
+                
+                // Load users data
+                const users = JSON.parse(localStorage.getItem('users')) || [];
+                document.getElementById('usersData').textContent = formatJson(users);
+                
+                // Load transactions data
+                const transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+                document.getElementById('transactionsData').textContent = formatJson(transactions);
+                
+                // Load bookmarks data
+                const bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
+                document.getElementById('bookmarksData').textContent = formatJson(bookmarks);
+            } catch (error) {
+                document.getElementById('booksData').textContent = "Error loading data: " + error.message;
+            }
+        }
+        
+        // Load data when page loads
+        window.addEventListener('load', loadData);
+    </script>
+</body>
+</html>

@@ -1,0 +1,5 @@
+FullName,Username,Password,Role,AdminNumber,Class
+John Doe,johndoe,pass123,student,STU0001,10A
+Jane Smith,janesmith,pass456,teacher,TCH0001,Super Admin
+Bob Johnson,bobjohnson,pass789,student,STU0002,11B
+Alice Williams,alicew,pass101,teacher,TCH0002,Principal

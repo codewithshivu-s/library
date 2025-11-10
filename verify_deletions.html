@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Book Deletion Verification</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f5f5f5; }
+        .container { max-width: 800px; margin: 0 auto; background-color: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .status { padding: 15px; border-radius: 4px; margin: 10px 0; }
+        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .info { background-color: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        .warning { background-color: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+        button { background-color: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-size: 16px; }
+        button:hover { background-color: #0056b3; }
+        .book-list { margin-top: 20px; }
+        .book-item { padding: 10px; border-bottom: 1px solid #eee; }
+        .book-item:last-child { border-bottom: none; }
+        .deleted { background-color: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Book Deletion Verification</h1>
+        
+        <div class="status info">
+            <strong>Information:</strong> This tool verifies that books deleted from the admin panel are permanently removed from localStorage.
+        </div>
+        
+        <button onclick="checkBooks()">Check Current Books</button>
+        <button onclick="resetData()" style="background-color: #dc3545; margin-left: 10px;">Reset All Data</button>
+        
+        <div id="results" class="book-list"></div>
+    </div>
+
+    <script>
+        // Function to check current books
+        function checkBooks() {
+            try {
+                const books = JSON.parse(localStorage.getItem('books')) || [];
+                const resultsDiv = document.getElementById('results');
+                
+                if (books.length === 0) {
+                    resultsDiv.innerHTML = '<div class="status warning">No books found in the system.</div>';
+                    return;
+                }
+                
+                let html = `<h2>Current Books (${books.length} total)</h2>`;
+                html += '<div class="status success">Books are persistently stored in localStorage and will remain after browser restart.</div>';
+                
+                books.forEach((book, index) => {
+                    html += `
+                        <div class="book-item">
+                            <strong>${book.title}</strong><br>
+                            <small>Author: ${book.author} | ISBN: ${book.isbn} | Category: ${book.category}</small><br>
+                            <small>Copies: ${book.availableCopies}/${book.totalCopies}</small>
+                        </div>
+                    `;
+                });
+                
+                resultsDiv.innerHTML = html;
+            } catch (error) {
+                document.getElementById('results').innerHTML = `<div class="status warning">Error reading data: ${error.message}</div>`;
+            }
+        }
+        
+        // Function to reset all data
+        function resetData() {
+            if (confirm('Are you sure you want to reset all data? This will delete all books, users, and transactions.')) {
+                localStorage.removeItem('books');
+                localStorage.removeItem('users');
+                localStorage.removeItem('transactions');
+                localStorage.removeItem('bookmarks');
+                document.getElementById('results').innerHTML = '<div class="status success">All data has been reset.</div>';
+            }
+        }
+        
+        // Check books when page loads
+        window.addEventListener('load', checkBooks);
+    </script>
+</body>
+</html>

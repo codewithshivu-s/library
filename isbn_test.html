@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ISBN API Test</title>
+</head>
+<body>
+    <h1>ISBN API Test</h1>
+    <input type="text" id="isbn" placeholder="Enter ISBN" value="978-0-123456-78-9">
+    <button onclick="testFetch()">Test Fetch</button>
+    <div id="result"></div>
+
+    <script>
+        async function testFetch() {
+            const isbn = document.getElementById('isbn').value;
+            if (!isbn) {
+                alert('Please enter an ISBN');
+                return;
+            }
+            
+            try {
+                // Using a CORS proxy to fetch from Google Books API
+                const proxyUrl = 'https://api.allorigins.win/raw?url=';
+                const apiUrl = encodeURIComponent(`https://www.googleapis.com/books/v1/volumes?q=isbn:${isbn}`);
+                const response = await fetch(proxyUrl + apiUrl);
+                const data = await response.json();
+                
+                if (data.items && data.items.length > 0) {
+                    const bookInfo = data.items[0].volumeInfo;
+                    const title = bookInfo.title || 'N/A';
+                    const authors = bookInfo.authors ? bookInfo.authors.join(', ') : 'Unknown';
+                    const categories = bookInfo.categories ? bookInfo.categories.join(', ') : 'Not specified';
+                    
+                    document.getElementById('result').innerHTML = `
+                        <h2>${title}</h2>
+                        <p><strong>ISBN:</strong> ${isbn}</p>
+                        <p><strong>Author:</strong> ${authors}</p>
+                        <p><strong>Category:</strong> ${categories}</p>
+                    `;
+                } else {
+                    document.getElementById('result').innerHTML = '<p>Book not found</p>';
+                }
+            } catch (error) {
+                document.getElementById('result').innerHTML = `<p>Error: ${error.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>

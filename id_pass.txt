@@ -1,0 +1,4 @@
+Username: "admin", Password: "admin123" (Admin role)
+Username: "librarian", Password: "lib123" (Librarian role)
+Username: "teacher", Password: "teach123" (Teacher role)
+Username: "student", Password: "stud123" (Student role)
