@@ -1,492 +1,303 @@
-﻿  <!DOCTYPE html>
-  <html lang="en">
-    <head>
+<!DOCTYPE html>
+<html lang="en">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>📚 Library Management System</title>
+    <title>ZENSTRO - IT Services & Digital Solutions</title>
     <link rel="stylesheet" href="styles.css">
-    </head>
-    <body>
-    <!-- Login Page -->
-    <div id="loginPage" class="login-container">
-        <div class="login-card">
-            <h1>📚 Library Management System</h1>
-            <form id="loginForm">
-                <div class="form-group">
-                    <label for="username">Username</label>
-                    <input type="text" id="username" class="input" placeholder="Enter your username" required>
-                </div>
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" class="input" placeholder="Enter your password" required>
-                </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%;">Login</button>
-            </form>
-            <div id="loginError" class="alert alert-error hidden"></div>
-        </div>
-    </div>
-
-    <!-- Main App -->
-    <div id="app" class="hidden">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
         <div class="container">
-            <div class="header">
-                <div>
-                    <h2 id="dashboardTitle">Dashboard</h2>
-                    <p style="color: rgba(255, 255, 255, 0.8); font-size: 0.875rem;">Welcome, <span id="userName"></span></p>
-                </div>
-                <button class="btn btn-secondary" onclick="App.logout()" style="background: rgba(255, 255, 255, 0.2); border: 1px solid rgba(255, 255, 255, 0.3);">Logout</button>
+            <div class="logo">
+                <h1>ZENSTRO</h1>
+                <span class="tagline">IT Services & Digital Solutions</span>
             </div>
-
-            <!-- Admin Dashboard -->
-            <div id="adminDashboard" class="dashboard hidden">
-                <div class="tabs">
-                    <button class="tab active" onclick="AdminDashboard.switchTab('overview')">📊 Overview</button>
-                    <button class="tab" onclick="AdminDashboard.switchTab('books')">📚 Books</button>
-                    <button class="tab" onclick="AdminDashboard.switchTab('users')">👥 Users</button>
-                    <button class="tab" onclick="AdminDashboard.switchTab('issue-return')">📖 Issue/Return</button>
-                    <button class="tab" onclick="AdminDashboard.switchTab('catalog')">🔍 Catalog</button>
-                    <button class="tab" onclick="AdminDashboard.switchTab('bookmarks')">🔖 Bookmarks</button>
-                    <button class="tab" onclick="AdminDashboard.switchTab('transactions')">📋 Transactions</button>
+            <nav class="nav">
+                <ul class="nav-list">
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#services">Services</a></li>
+                    <li><a href="#differentiators">Why Choose Us</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+                <div class="mobile-menu-toggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
                 </div>
+            </nav>
+        </div>
+    </header>
 
-                <!-- Overview Tab -->
-                <div id="tab-overview" class="tab-content">
-                    <div class="grid grid-4">
-                        <div class="card stats-card blue">
-                            <h3 id="totalBooks">0</h3>
-                            <p>Total Books</p>
-                        </div>
-                        <div class="card stats-card green">
-                            <h3 id="totalUsers">0</h3>
-                            <p>Total Users</p>
-                        </div>
-                        <div class="card stats-card orange">
-                            <h3 id="activeIssues">0</h3>
-                            <p>Active Issues</p>
-                        </div>
-                        <div class="card stats-card purple">
-                            <h3 id="availableBooks">0</h3>
-                            <p>Available Books</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Books Tab -->
-                <div id="tab-books" class="tab-content hidden">
-                    <div class="card">
-                        <h2>📚 Add New Book</h2>
-                        <form id="addBookForm">
-                            <div class="grid grid-2">
-                                <div class="form-group">
-                                    <label for="bookTitle">Title</label>
-                                    <input type="text" id="bookTitle" class="input" placeholder="Enter book title" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="bookAuthor">Author</label>
-                                    <input type="text" id="bookAuthor" class="input" placeholder="Enter author name" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="bookISBN">ISBN</label>
-                                    <input type="text" id="bookISBN" class="input" placeholder="Enter ISBN number" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="bookCategory">Category</label>
-                                    <input type="text" id="bookCategory" class="input" placeholder="Enter category" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="bookCopies">Total Copies</label>
-                                    <input type="number" id="bookCopies" class="input" placeholder="Enter number of copies" min="1" required>
-                                </div>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Add Book</button>
-                        </form>
-                    </div>
-                    <div class="card">
-                        <h2>📁 Import/Export Books</h2>
-                        <div class="form-group">
-                            <label for="csvFile">Upload CSV File</label>
-                            <input type="file" id="csvFile" class="input" accept=".csv" />
-                            <small style="color: var(--gray-color); font-size: 0.75rem;">CSV format: ISBN,Title,Author,Category</small>
-                        </div>
-                        <button id="importCsvBtn" class="btn btn-secondary">Import Books from CSV</button>
-                        <button id="downloadCsvBtn" class="btn btn-primary" style="margin-left: 10px;">Download All Books as CSV</button>
-                        <div id="adminCsvError" class="alert alert-error hidden" style="margin-top: 15px;"></div>
-                    </div>
-                    <div class="card">
-                        <h2>📚 All Books</h2>
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Title</th>
-                                    <th>Author</th>
-                                    <th>ISBN</th>
-                                    <th>Category</th>
-                                    <th>Available</th>
-                                    <th>Total</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="booksTableBody"></tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- Users Tab -->
-                <div id="tab-users" class="tab-content hidden">
-                    <div class="card">
-                        <h2>👥 Add New User</h2>
-                        <form id="addUserForm">
-                            <div class="grid grid-2">
-                                <div class="form-group">
-                                    <label for="userFullName">Full Name</label>
-                                    <input type="text" id="userFullName" class="input" placeholder="Enter full name" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="userUsername">Username</label>
-                                    <input type="text" id="userUsername" class="input" placeholder="Enter username" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="userPassword">Password</label>
-                                    <input type="password" id="userPassword" class="input" placeholder="Enter password" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="userRole">Role</label>
-                                    <select id="userRole" class="select" required>
-                                        <option value="">Select Role</option>
-                                        <option value="admin">Admin</option>
-                                        <option value="librarian">Librarian</option>
-                                        <option value="teacher">Teacher</option>
-                                        <option value="student">Student</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label for="userAdminNumber">Admin Number</label>
-                                    <input type="text" id="userAdminNumber" class="input" placeholder="Leave empty for auto-generate">
-                                </div>
-                                <div id="classFieldContainer" class="form-group hidden">
-                                    <label for="userClass">Class</label>
-                                    <input type="text" id="userClass" class="input" placeholder="e.g., Grade 10-A">
-                                </div>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Add User</button>
-                        </form>
-                    </div>
-                    <div class="card">
-                        <h2>📁 Import/Export Users</h2>
-                        <div class="form-group">
-                            <label for="csvUserFile">Upload CSV File</label>
-                            <input type="file" id="csvUserFile" class="input" accept=".csv" />
-                            <small style="color: var(--gray-color); font-size: 0.75rem;">CSV format: FullName,Username,Password,Role,AdminNumber,Class</small>
-                        </div>
-                        <button id="importUsersCsvBtn" class="btn btn-secondary">Import Users from CSV</button>
-                        <button id="downloadUsersCsvBtn" class="btn btn-primary" style="margin-left: 10px;">Download All Users as CSV</button>
-                        <div id="adminCsvError" class="alert alert-error hidden" style="margin-top: 15px;"></div>
-                    </div>
-                    <div class="card">
-                        <h2>👥 All Users</h2>
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Full Name</th>
-                                    <th>Username</th>
-                                    <th>Password</th>
-                                    <th>Role</th>
-                                    <th>Admin Number</th>
-                                    <th>Class</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="usersTableBody"></tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- Issue/Return Tab (Admin) -->
-                <div id="tab-issue-return" class="tab-content hidden">
-                    <div class="grid grid-2">
-                        <div class="card">
-                            <h2>📖 Issue Book</h2>
-                            <form id="adminIssueBookForm">
-                                <div class="form-group">
-                                    <label for="adminSearchBookISBN">Book ISBN</label>
-                                    <input type="text" id="adminSearchBookISBN" class="input" placeholder="Enter ISBN to search">
-                                </div>
-                                <div id="adminBookInfo" class="hidden"></div>
-                                <div class="form-group">
-                                    <label for="adminSearchUserAdmin">Student/Teacher Admin Number</label>
-                                    <input type="text" id="adminSearchUserAdmin" class="input" placeholder="Enter admin number">
-                                </div>
-                                <div id="adminUserInfo" class="hidden"></div>
-                                <div class="form-group">
-                                    <label for="adminIssueDate">Issue Date</label>
-                                    <input type="date" id="adminIssueDate" class="input" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="adminReturnDays">Return Days (Days until due date)</label>
-                                    <input type="number" id="adminReturnDays" class="input" placeholder="Enter number of days" min="1" value="7" required>
-                                    <small style="color: var(--gray-color); font-size: 0.75rem;">Number of days the user has to return the book</small>
-                                </div>
-                                <button type="submit" class="btn btn-primary" style="width: 100%;">Issue Book</button>
-                            </form>
-                            <div id="adminIssueError" class="alert alert-error hidden"></div>
-                        </div>
-                        <div class="card">
-                            <h2>📖 Return Book</h2>
-                            <form id="adminReturnBookForm">
-                                <div class="form-group">
-                                    <label for="adminReturnBookISBN">Book ISBN</label>
-                                    <input type="text" id="adminReturnBookISBN" class="input" placeholder="Enter ISBN to return">
-                                </div>
-                                <div id="adminReturnInfo" class="hidden"></div>
-                                <button type="submit" class="btn btn-success" style="width: 100%;">Return Book</button>
-                            </form>
-                            <div id="adminReturnError" class="alert alert-error hidden"></div>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <h2>📖 Currently Issued Books</h2>
-                        <div id="adminActiveIssuesList" class="grid grid-3"></div>
-                    </div>
-                </div>
-
-                <!-- Catalog Tab (Admin) -->
-                <div id="tab-catalog" class="tab-content hidden">
-                    <div class="card">
-                        <h2>🔍 Book Catalog</h2>
-                        <div class="search-box">
-                            <input type="text" id="adminCatalogSearch" class="input" placeholder="Search by title, author, or ISBN...">
-                        </div>
-                        <div class="form-group">
-                            <label for="adminCatalogCategory">Category</label>
-                            <select id="adminCatalogCategory" class="select">
-                                <option value="all">All Categories</option>
-                            </select>
-                        </div>
-                        <div id="adminCatalogList" class="grid grid-3"></div>
-                    </div>
-                </div>
-
-                <!-- Bookmarks Tab (Admin) -->
-                <div id="tab-bookmarks" class="tab-content hidden">
-                    <div class="card">
-                        <h2>🔖 Bookmarks</h2>
-                        <p>View all bookmarked books and who bookmarked them.</p>
-                        <div id="adminBookmarksList" class="grid grid-3"></div>
-                    </div>
-                </div>
-
-                <!-- Transactions Tab -->
-                <div id="tab-transactions" class="tab-content hidden">
-                    <div class="card">
-                        <h2>📋 Transaction History</h2>
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Book</th>
-                                    <th>User</th>
-                                    <th>Type</th>
-                                    <th>Issue Date</th>
-                                    <th>Due Date</th>
-                                    <th>Return Date</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="transactionsTableBody"></tbody>
-                        </table>
-                    </div>
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h2>Fast, Reliable & Affordable Digital Solutions</h2>
+                <p>Delivering cutting-edge IT services without excuses or delays. Your success is our commitment.</p>
+                <div class="hero-buttons">
+                    <a href="#contact" class="btn btn-primary">Get Started</a>
+                    <a href="#services" class="btn btn-secondary">Our Services</a>
                 </div>
             </div>
-
-            <!-- Librarian Dashboard -->
-            <div id="librarianDashboard" class="dashboard hidden">
-                <div class="tabs">
-                    <button class="tab active" onclick="LibrarianDashboard.switchTab('issue-return')">📖 Issue/Return</button>
-                    <button class="tab" onclick="LibrarianDashboard.switchTab('catalog')">📚 Catalog</button>
-                    <button class="tab" onclick="LibrarianDashboard.switchTab('bookmarks')">🔖 Bookmarks</button>
-                    <button class="tab" onclick="LibrarianDashboard.switchTab('transactions')">📋 History</button>
-                </div>
-
-                <!-- Issue/Return Tab -->
-                <div id="librarian-tab-issue-return" class="tab-content">
-                    <div class="grid grid-2">
-                        <div class="card">
-                            <h2>📖 Issue Book</h2>
-                            <form id="issueBookForm">
-                                <div class="form-group">
-                                    <label for="searchBookISBN">Book ISBN</label>
-                                    <input type="text" id="searchBookISBN" class="input" placeholder="Enter ISBN to search">
-                                </div>
-                                <div id="bookInfo" class="hidden"></div>
-                                <div class="form-group">
-                                    <label for="searchUserAdmin">Student/Teacher Admin Number</label>
-                                    <input type="text" id="searchUserAdmin" class="input" placeholder="Enter admin number">
-                                </div>
-                                <div id="userInfo" class="hidden"></div>
-                                <div class="form-group">
-                                    <label for="issueDate">Issue Date</label>
-                                    <input type="date" id="issueDate" class="input" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="returnDays">Return Days (Days until due date)</label>
-                                    <input type="number" id="returnDays" class="input" placeholder="Enter number of days" min="1" value="7" required>
-                                    <small style="color: var(--gray-color); font-size: 0.75rem;">Number of days the user has to return the book</small>
-                                </div>
-                                <button type="submit" class="btn btn-primary" style="width: 100%;">Issue Book</button>
-                            </form>
-                            <div id="issueError" class="alert alert-error hidden"></div>
-                        </div>
-                        <div class="card">
-                            <h2>📖 Return Book</h2>
-                            <form id="returnBookForm">
-                                <div class="form-group">
-                                    <label for="returnBookISBN">Book ISBN</label>
-                                    <input type="text" id="returnBookISBN" class="input" placeholder="Enter ISBN to return">
-                                </div>
-                                <div id="returnInfo" class="hidden"></div>
-                                <button type="submit" class="btn btn-success" style="width: 100%;">Return Book</button>
-                            </form>
-                            <div id="returnError" class="alert alert-error hidden"></div>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <h2>📖 Currently Issued Books</h2>
-                        <div id="activeIssuesList" class="grid grid-3"></div>
-                    </div>
-                </div>
-
-                <!-- Catalog Tab -->
-                <div id="librarian-tab-catalog" class="tab-content hidden">
-                    <div class="card">
-                        <h2>📚 Book Catalog</h2>
-                        <div id="catalogList" class="grid grid-3"></div>
-                    </div>
-                </div>
-
-                <!-- Bookmarks Tab (Librarian) -->
-                <div id="librarian-tab-bookmarks" class="tab-content hidden">
-                    <div class="card">
-                        <h2>🔖 Bookmarks</h2>
-                        <p>View all bookmarked books and who bookmarked them.</p>
-                        <div id="librarianBookmarksList" class="grid grid-3"></div>
-                    </div>
-                </div>
-
-                <!-- Transactions Tab -->
-                <div id="librarian-tab-transactions" class="tab-content hidden">
-                    <div class="card">
-                        <h2>📋 Transaction History</h2>
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Book</th>
-                                    <th>User</th>
-                                    <th>Type</th>
-                                    <th>Issue Date</th>
-                                    <th>Due Date</th>
-                                    <th>Return Date</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody id="librarianTransactionsTableBody"></tbody>
-                        </table>
-                    </div>
-                </div>
+            <div class="hero-image">
+                <div class="tech-icon">🚀</div>
             </div>
+        </div>
+    </section>
 
-            <!-- Teacher Dashboard -->
-            <div id="teacherDashboard" class="dashboard hidden">
-                <div class="tabs">
-                    <button class="tab active" onclick="TeacherDashboard.switchTab('catalog')">📚 Catalog</button>
-                    <button class="tab" onclick="TeacherDashboard.switchTab('reserved')">📌 Reserved</button>
-                    <button class="tab" onclick="TeacherDashboard.switchTab('issued')">📖 My Books</button>
+    <!-- About Section -->
+    <section id="about" class="about">
+        <div class="container">
+            <h2>About ZENSTRO</h2>
+            <div class="about-content">
+                <div class="about-text">
+                    <p>ZENSTRO is a modern IT solutions company built with one clear objective: <strong>deliver fast, reliable, and affordable digital solutions without excuses or delays.</strong></p>
+                    <p>The company operates with a client-first and execution-focused mindset, combining strong technical expertise with transparent communication and strict delivery timelines.</p>
+                    <p>ZENSTRO was founded to challenge outdated IT service models that rely on vague timelines, hidden costs, and weak accountability. Instead, ZENSTRO follows a <strong>performance-backed delivery system</strong> where responsibility stays with the service provider—not the client.</p>
                 </div>
-
-                <!-- Catalog Tab -->
-                <div id="teacher-tab-catalog" class="tab-content">
-                    <div class="card">
-                        <h2>📚 Book Catalog</h2>
-                        <div class="search-box">
-                            <input type="text" id="catalogSearch" class="input" placeholder="Search by title, author, or ISBN...">
-                        </div>
-                        <div class="form-group">
-                            <label for="catalogCategory">Category</label>
-                            <select id="catalogCategory" class="select">
-                                <option value="all">All Categories</option>
-                            </select>
-                        </div>
-                        <div id="teacherCatalogList" class="grid grid-3"></div>
-                    </div>
-                </div>
-
-                <!-- Reserved Tab -->
-                <div id="teacher-tab-reserved" class="tab-content hidden">
-                    <div class="card">
-                        <h2>📌 Reserved Books</h2>
-                        <div id="reservedBooksList" class="grid grid-3"></div>
-                    </div>
-                </div>
-
-                <!-- Issued Books Tab -->
-                <div id="teacher-tab-issued" class="tab-content hidden">
-                    <div class="card">
-                        <h2>📖 Currently Issued Books</h2>
-                        <div id="issuedBooksList" class="grid grid-3"></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Student Dashboard -->
-            <div id="studentDashboard" class="dashboard hidden">
-                <div class="tabs">
-                    <button class="tab active" onclick="StudentDashboard.switchTab('search')">🔍 Search Books</button>
-                    <button class="tab" onclick="StudentDashboard.switchTab('requested')">📌 Requested</button>
-                    <button class="tab" onclick="StudentDashboard.switchTab('borrowed')">📖 My Books</button>
-                </div>
-
-                <!-- Search Tab -->
-                <div id="student-tab-search" class="tab-content">
-                    <div class="card">
-                        <h2>🔍 Search Books</h2>
-                        <div class="search-box">
-                            <input type="text" id="studentCatalogSearch" class="input" placeholder="Search by title, author, or ISBN...">
-                        </div>
-                        <div class="form-group">
-                            <label for="studentCatalogCategory">Category</label>
-                            <select id="studentCatalogCategory" class="select">
-                                <option value="all">All Categories</option>
-                            </select>
-                        </div>
-                        <div id="studentCatalogList" class="grid grid-3"></div>
-                    </div>
-                </div>
-
-                <!-- Requested Tab -->
-                <div id="student-tab-requested" class="tab-content hidden">
-                    <div class="card">
-                        <h2>📌 Requested Books</h2>
-                        <div id="requestedBooksList" class="grid grid-3"></div>
-                    </div>
-                </div>
-
-                <!-- Borrowed Tab -->
-                <div id="student-tab-borrowed" class="tab-content hidden">
-                    <div class="card">
-                        <h2>📖 My Borrowed Books</h2>
-                        <div id="borrowedBooksList" class="grid grid-3"></div>
-                    </div>
+                <div class="founder-info">
+                    <h3>Founded by Shubham Pathak</h3>
+                    <p><strong>Owner & Chief Executive Officer (CEO)</strong></p>
+                    <p>Website: <a href="https://zenstro.space" target="_blank">https://zenstro.space</a></p>
+                    <p>CEO Profile: <a href="https://shubham.zenstro.space" target="_blank">https://shubham.zenstro.space</a></p>
                 </div>
             </div>
         </div>
-    </div>
+    </section>
 
-    <!-- Scripts -->
-    <script src="data.js"></script>
-    <script src="utils.js"></script>
-    <script src="admin-dashboard.js"></script>
-    <script src="librarian-dashboard.js"></script>
-    <script src="teacher-dashboard.js"></script>
-    <script src="student-dashboard.js"></script>
-    <script src="app.js"></script>
-    </body>
-  </html>
+    <!-- Delivery Guarantee -->
+    <section class="guarantee">
+        <div class="container">
+            <div class="guarantee-card">
+                <h2>🚀 CORE DELIVERY CHALLENGE (OFFICIAL POLICY)</h2>
+                <p>ZENSTRO publicly commits to completing every accepted project within the agreed timeline, with a <strong>maximum standard delivery period of one (1) week</strong>, unless otherwise documented.</p>
+                <h3>DELIVERY GUARANTEE</h3>
+                <p>If ZENSTRO fails to deliver the agreed project within the committed time period, the entire service or project will be provided <strong>FREE OF COST</strong>.</p>
+                <ul>
+                    <li>-No negotiations</li>
+                    <li>-No partial payments</li>
+                    <li>-No excuses</li>
+                </ul>
+                <p>This policy exists to establish trust, accountability, and credibility.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="services">
+        <div class="container">
+            <h2>Our Core Services</h2>
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="service-icon">💻</div>
+                    <h3>Website Design & Development</h3>
+                    <p>Modern, responsive websites built with cutting-edge technologies.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">🌐</div>
+                    <h3>Web Applications & Custom Systems</h3>
+                    <p>Tailored web applications to meet your specific business needs.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">🎨</div>
+                    <h3>UI / UX Design</h3>
+                    <p>Intuitive and beautiful user interfaces that enhance user experience.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">☁️</div>
+                    <h3>Cloud Solutions & DevOps</h3>
+                    <p>Scalable cloud infrastructure and efficient deployment pipelines.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">📊</div>
+                    <h3>ERP-Lite & Internal Management Systems</h3>
+                    <p>Streamlined business management and operational efficiency.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">📝</div>
+                    <h3>Digital Forms, Dashboards & Automation</h3>
+                    <p>Automated workflows and data-driven decision making.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">🖼️</div>
+                    <h3>Banner, Poster & Digital Creative Design</h3>
+                    <p>Eye-catching visual content for your brand and marketing.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">🔧</div>
+                    <h3>Website Fixing, Optimization & Rescue Services</h3>
+                    <p>Repair, optimize, and rescue your existing digital assets.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">👨‍💼</div>
+                    <h3>IT Consulting & Technical Support</h3>
+                    <p>Expert guidance and ongoing technical assistance.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Industry Focus -->
+    <section class="industry">
+        <div class="container">
+            <h2>Industry Focus</h2>
+            <p>ZENSTRO serves a wide range of clients, including:</p>
+            <div class="industry-grid">
+                <div class="industry-item">🏫 Educational Institutions (Schools, Coaching Centers, Colleges)</div>
+                <div class="industry-item">🏢 Small & Medium Businesses</div>
+                <div class="industry-item">🚀 Startups & Entrepreneurs</div>
+                <div class="industry-item">🌍 Local, National & Remote Organizations</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Key Differentiators -->
+    <section id="differentiators" class="differentiators">
+        <div class="container">
+            <h2>Why Choose ZENSTRO?</h2>
+            <div class="differentiators-grid">
+                <div class="differentiator-card">
+                    <div class="differentiator-icon">⏰</div>
+                    <h3>Guaranteed Delivery</h3>
+                    <p>Projects are delivered within the agreed timeline, with standard projects completed within 1 week.</p>
+                </div>
+                <div class="differentiator-card">
+                    <div class="differentiator-icon">💰</div>
+                    <h3>On-Time or Free Policy</h3>
+                    <p>Failure to meet the delivery deadline results in 100% free service.</p>
+                </div>
+                <div class="differentiator-card">
+                    <div class="differentiator-icon">💸</div>
+                    <h3>Flexible & Affordable Pricing</h3>
+                    <p>Pricing is adjusted based on scope and requirements—often significantly lower than market rates, without compromising quality.</p>
+                </div>
+                <div class="differentiator-card">
+                    <div class="differentiator-icon">🔍</div>
+                    <h3>Complete Transparency</h3>
+                    <p>No hidden charges. No forced upgrades. No misleading commitments.</p>
+                </div>
+                <div class="differentiator-card">
+                    <div class="differentiator-icon">⚡</div>
+                    <h3>Speed with Accountability</h3>
+                    <p>Fast execution backed by ownership and responsibility.</p>
+                </div>
+                <div class="differentiator-card">
+                    <div class="differentiator-icon">👥</div>
+                    <h3>Client-First Execution</h3>
+                    <p>Solutions are built around real business needs, not generic templates.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Company Values -->
+    <section class="values">
+        <div class="container">
+            <h2>Our Values</h2>
+            <div class="values-grid">
+                <div class="value-item">🔒 Transparency & Integrity</div>
+                <div class="value-item">⚡ Speed with Responsibility</div>
+                <div class="value-item">💬 Honest & Clear Communication</div>
+                <div class="value-item">⭐ Quality-Focused Execution</div>
+                <div class="value-item">🤝 Long-Term Client Relationships</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Vision & Mission -->
+    <section class="vision-mission">
+        <div class="container">
+            <div class="vision-mission-content">
+                <div class="vision">
+                    <h2>Our Vision</h2>
+                    <p>To become a trusted global IT service partner known for speed, honesty, affordability, and guaranteed delivery.</p>
+                </div>
+                <div class="mission">
+                    <h2>Our Mission</h2>
+                    <p>To empower businesses and institutions with reliable, efficient, and cost-effective digital solutions that save time, reduce operational complexity, and support sustainable growth—without false promises or unnecessary complications.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <div class="container">
+            <h2>Contact Us</h2>
+            <div class="contact-content">
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <div class="contact-icon">📞</div>
+                        <div>
+                            <h3>Call / WhatsApp</h3>
+                            <p>+91 63978 42748</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">📧</div>
+                        <div>
+                            <h3>Email</h3>
+                            <p>official.zenstro@gmail.com</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">🌐</div>
+                        <div>
+                            <h3>Website</h3>
+                            <p><a href="https://zenstro.space" target="_blank">https://zenstro.space</a></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="contact-form">
+                    <form>
+                        <div class="form-group">
+                            <label for="name">Name</label>
+                            <input type="text" id="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="message">Message</label>
+                            <textarea id="message" rows="5" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Send Message</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <h3>ZENSTRO</h3>
+                    <p>IT Services & Digital Solutions</p>
+                </div>
+                <div class="footer-links">
+                    <a href="#home">Home</a>
+                    <a href="#about">About</a>
+                    <a href="#services">Services</a>
+                    <a href="#contact">Contact</a>
+                </div>
+                <div class="footer-social">
+                    <p>Connect with us on social media</p>
+                    <!-- Add social media links here -->
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 ZENSTRO. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
